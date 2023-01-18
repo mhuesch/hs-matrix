@@ -64,3 +64,6 @@ cabal v2-exec hmx
 
 - [ ] consider how to use this as a surface to visualize actual data?
 ** that was ostensibly the original point of it in 'The Matrix'
+
+- [ ] handle terminal resize
+** we currently only detect on startup
