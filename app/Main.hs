@@ -1,10 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Main where
 
+import Control.Monad.Random (MonadRandom, runRand)
+import Control.Monad.Random.Class (getRandomR)
 import Graphics.Vty
 import Lens.Micro ((^.), (%~), (&))
 import Lens.Micro.TH
-import System.Random (RandomGen, randomR)
+import System.Random (RandomGen)
 
 
 data Snake =
@@ -39,21 +41,21 @@ go model = do
   -- e <- nextEvent vty
   pure ()
 
-stepColumn :: RandomGen g => g -> Column -> (Column, g)
-stepColumn gen c = (c, gen)
+stepColumn :: MonadRandom m => Column -> m Column
+stepColumn c = pure c
 
-stepSnake :: RandomGen g => g -> Snake -> (Snake, g)
-stepSnake gen s = ( s & sHeadIdx %~ succ
-                      & sBody %~ extendBody
-                  , gen')
+stepSnake :: MonadRandom m => Snake -> m Snake
+stepSnake s = do
+  c <- genSnakeChar
+  pure (s & sHeadIdx %~ succ
+          & sBody %~ extendBody c)
  where
-  (c, gen') = genSnakeChar gen
-  extendBody body = let len = length body
-                     in take len (c:body)
+  extendBody c body = let len = length body
+                       in take len (c:body)
 
 -- | this exercises a decent chunk of the printable range
-genSnakeChar :: RandomGen g => g -> (Char, g)
-genSnakeChar = randomR ('!', '~')
+genSnakeChar :: MonadRandom m => m Char
+genSnakeChar = getRandomR ('!', '~')
 
 isSnakeOffscreen :: Int -> Snake -> Bool
 isSnakeOffscreen height s = height < ((s ^. sHeadIdx) - (length (s ^. sBody)))
