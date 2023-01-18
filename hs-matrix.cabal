@@ -17,6 +17,7 @@ executable hmx
     build-depends:    base ^>=4.17.0.0
                     , microlens
                     , microlens-th
+                    , random
                     , vty
     hs-source-dirs:   app
     default-language: GHC2021
