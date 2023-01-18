@@ -18,8 +18,10 @@ executable hmx
                     , MonadRandom
                     , microlens
                     , microlens-th
+                    , primitive
                     , random
                     , terminal-size
+                    , vector
                     , vty
     hs-source-dirs:   app
     default-language: GHC2021
