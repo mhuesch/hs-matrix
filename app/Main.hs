@@ -40,7 +40,6 @@ main = do
   gen <- getStdGen
   _ <- go vty height gen cs
   shutdown vty
-  putStrLn "bye 👋"
 
 go :: Vty -> Int -> StdGen -> [Column] -> IO ()
 go vty height gen cs = do
@@ -49,7 +48,11 @@ go vty height gen cs = do
   let line0 = string (defAttr `withForeColor` red) (show cs')
       pic = picForImage line0
   update vty pic
-  go vty height gen' cs'
+  mE <- nextEventNonblocking vty
+  case mE of
+    Just (EvKey KEsc _) -> pure ()
+    Just (EvKey (KChar 'q') _) -> pure ()
+    _ -> go vty height gen' cs'
 
 stepColumn
   :: MonadRandom m
