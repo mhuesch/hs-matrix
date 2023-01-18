@@ -1,0 +1,66 @@
+= hs-matrix
+
+quick 'n dirty clone of https://github.com/abishekvashok/cmatrix[`cmatrix`], written in Haskell using https://hackage.haskell.org/package/vty-5.37[`vty`].
+
+== example
+
+[source]
+----
+   42 { a           .     8-E           ~ o DW
+   N.   $           ^     8 T           U D r^
+   vP   t   W       j     i A           " F 7  :
+   9{   T   ,       <     | x=          3 . q  $
+  jO0   _   !c      <     g  g          f ] &  1
+  OL*   Q   g}      Z     $  A          &   v  C
+  t3    e   d7            n  A          8~  2  O
+  %L    G   OK            L  _          v`  m  ^
+  <d    *   9|            "  J          K{     T
+ j?;    [   V2            '  s          ^H     &
+ :Xm    'C   b            c  p {        mR     <
+ ..U    p:   S            $  y !        hh    `&
+ FYw   `&>   7)       O   B  y r        &B    .,
+ YT`   6pN   |v       d   5    C     {  s5    Rj
+ 8h4   hcq   hr       o   :    /     W  Nn    cS
+ e>-   %&x   hd       t   `    !     -h w*    +q
+ +h_   SH\   g'      >F   X    e     U_ .'    ]?
+ .0X   =+Zj  xH  R   \R       ,M   Z hO;1Q    K<
+ ] 5   hs~P  `|  V   +x       YS   b .}(bq    Ln
+ [ s   1 +Q  }t! C   9] *     (p   n NJ`!g    hR
+ U s   2 b0  `<v<o   }$ B     Jn  =G b_/a4    N8
+0{ -   " Gd  f"V"Pf  i@ h4    iz  $= "(;q@    4K
+m< p   f I^  eQ@Bui  8V >b    _! `ie +D}ai Y  *i
+d< #   / 3F  PECqK5  =x /Z    *I mo?x!?8qo !  D*
+|X     [ `l  l'\gW!^ ,  Ne    z% HSl>^( m  J  b5
+-|     [ Yr  O: -T*n -  V^  w d  [f-,b> X  h  +h
+       T vt  x$ `I#% 7 luY  # P  *Nb6N$ )  -  mO
+       M )m  5^ mZ.A K nV$ 8( W  kDYKS<    c ?QB
+      !n xO  'T ^G|# 1 Gtq 7p E  < q%Qy    * BOS
+      ?E c   `) Pr>t g =K# :"Dx  ; W i*    | TRZ
+     0'D '   {0 TtvQ $ dPr V4xu  b K 0.    G uCY
+     %g} X   != Z4j  @ g_> ]S,   p - @,      xt
+     Rj~ M    I QSK    ):" lbp   ` / h{      Pb
+     -q"      g TrU    1LD Hu"   L C ^'      U[
+     sM?      Y h6H    u }  M6   n   U3      o/
+     CD?   5  & f l    \    ^-  [(   O       S9
+       n   i    p +    @    YR  lw   "      i*)
+       /   j    } 2    C    |J  `=          I U
+    *  x   b    h -    2    k=  n&          ) I
+    V  D   F    <      I    <+  4e          g L
+    @  e   V    "      <    U"  c           k >
+----
+
+== building & running
+
+[source]
+----
+cabal v2-build
+cabal v2-exec hmx
+----
+
+== todo
+
+- [ ] make it less dense / cluttered
+** perhaps probabilistic selection of which column "spawns next snake" would help
+
+- [ ] consider how to use this as a surface to visualize actual data?
+** that was ostensibly the original point of it in 'The Matrix'
