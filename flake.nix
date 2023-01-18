@@ -14,8 +14,10 @@
         pkgs = import nixpkgs { inherit system; };
       in
       {
-        defaultPackage =
-          pkgs.haskell.packages.${compiler}.callPackage ./hs-matrix.nix { };
+        packages = rec {
+          hmx = pkgs.haskell.packages.${compiler}.callPackage ./hs-matrix.nix { };
+          default = hmx;
+        };
 
         devShell =
           pkgs.mkShell {
