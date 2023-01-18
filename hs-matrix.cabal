@@ -14,7 +14,7 @@ common warnings
 executable hmx
     import:           warnings
     main-is:          Main.hs
-    build-depends:    base ^>=4.17.0.0
+    build-depends:    base ^>=4.16.0.0
                     , MonadRandom
                     , microlens
                     , microlens-th

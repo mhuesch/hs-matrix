@@ -51,10 +51,26 @@ d< #   / 3F  PECqK5  =x /Z    *I mo?x!?8qo !  D*
 
 == building & running
 
+=== w/ cabal
+
 [source]
 ----
 cabal v2-build
 cabal v2-exec hmx
+----
+
+=== w/ nix
+
+[source]
+----
+nix build
+----
+
+==== keeping cabal2nix up-to-date
+
+[source]
+----
+cabal2nix . > hs-matrix.nix
 ----
 
 == todo

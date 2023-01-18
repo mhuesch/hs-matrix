@@ -6,7 +6,7 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     let
-      compiler = "ghc944";
+      compiler = "ghc925";
       supported-systems = [ "x86_64-linux" "aarch64-linux" ];
     in
     flake-utils.lib.eachSystem supported-systems (system:
