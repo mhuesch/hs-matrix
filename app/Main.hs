@@ -67,12 +67,10 @@ renderColumn height col = vertCat (V.toList vec)
     v <- MV.replicate height (char defAttr ' ')
     forM_ (col^.cSnakes) $ \snake -> do
       forM_ (zip [0..] (snake^.sBody)) $ \(offset, c) -> do
-        let attr = if offset == 0
-                      then (defAttr `withForeColor` white)
-                      else (defAttr `withForeColor` green)
+        let color = if offset == 0 then white else green
             idx = snake^.sHeadIdx - offset
         when (0 <= idx && idx < height) $
-          MV.write v idx (char attr c)
+          MV.write v idx (char (defAttr `withForeColor` color) c)
     V.unsafeFreeze v
 
 stepColumn
@@ -99,8 +97,16 @@ genSnakeChar :: MonadRandom m => m Char
 genSnakeChar = getRandomR ('!', '~')
 
 spawnSnakes :: MonadRandom m => [Snake] -> m [Snake]
-spawnSnakes [] = (:[]) <$> spawnSnake
-spawnSnakes (s:rest) | (snakeTailIdx s > 5) = (:s:rest) <$> spawnSnake
+spawnSnakes [] = do
+  p <- getRandomR (0,7::Int)
+  if p < 1
+     then ((:[]) <$> spawnSnake)
+     else pure []
+spawnSnakes (s:rest) | (snakeTailIdx s > 5) = do
+  p <- getRandomR (0,7::Int)
+  if p < 1
+     then (:s:rest) <$> spawnSnake
+     else pure (s:rest)
 spawnSnakes (s:rest) = pure (s:rest)
 
 spawnSnake :: MonadRandom m => m Snake
