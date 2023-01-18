@@ -1,0 +1,19 @@
+cabal-version:      3.4
+name:               hs-matrix
+version:            0.1.0.0
+license:            GPL-3.0-only
+license-file:       LICENSE
+author:             Michael Hueschen
+maintainer:         m@mhueschen.space
+category:           Text
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+executable hs-matrix
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.17.0.0
+    hs-source-dirs:   app
+    default-language: GHC2021
