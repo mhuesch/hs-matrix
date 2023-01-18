@@ -11,9 +11,11 @@ build-type:         Simple
 common warnings
     ghc-options: -Wall
 
-executable hs-matrix
+executable hmx
     import:           warnings
     main-is:          Main.hs
     build-depends:    base ^>=4.17.0.0
+                    , vty
     hs-source-dirs:   app
     default-language: GHC2021
+    ghc-options:      -threaded
