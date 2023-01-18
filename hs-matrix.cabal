@@ -19,6 +19,7 @@ executable hmx
                     , microlens
                     , microlens-th
                     , random
+                    , terminal-size
                     , vty
     hs-source-dirs:   app
     default-language: GHC2021
