@@ -1,0 +1,7 @@
+# haskell
+dist-newstyle/
+
+# nix
+.direnv/
+result
+result-bin
