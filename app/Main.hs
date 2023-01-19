@@ -12,7 +12,6 @@ import qualified Data.Vector.Mutable as MV
 import           Graphics.Vty
 import           Lens.Micro ((^.), (%~), (&))
 import           Lens.Micro.TH
-import           System.Console.Terminal.Size (Window(..), size)
 import           System.Random (StdGen, getStdGen)
 
 
@@ -35,21 +34,19 @@ main :: IO ()
 main = do
   cfg <- standardIOConfig
   vty <- mkVty cfg
-  (height, width) <- do
-    mW <- size
-    case mW of
-      Nothing -> error "wat"
-      Just (Window h w) -> pure (h, w)
-  let cs = replicate width (Column []) :: [Column]
   gen <- getStdGen
-  _ <- go vty height gen cs
+  _ <- go vty gen []
   shutdown vty
 
-go :: Vty -> Int -> StdGen -> [Column] -> IO ()
-go vty height gen cs = do
+go :: Vty -> StdGen -> [Column] -> IO ()
+go vty gen cs = do
   threadDelay (5 * 10^(4::Int))
-  let (cs', gen') = runRand (mapM (stepColumn height) cs) gen
-      imgCols = map (renderColumn height) cs'
+  (width, height) <-
+    displayBounds (outputIface vty)
+  -- in the event of width rescaling, pad / truncate cols
+  let resizedCs = take width (cs <> repeat (Column []))
+      (steppedCs, gen') = runRand (mapM (stepColumn height) resizedCs) gen
+      imgCols = map (renderColumn height) steppedCs
       pic = picForImage (horizCat imgCols)
   update vty pic
   mE <- nextEventNonblocking vty
@@ -57,7 +54,7 @@ go vty height gen cs = do
     Just (EvKey KEsc _) -> pure ()
     Just (EvKey (KChar 'q') _) -> pure ()
     Just (EvKey (KChar 'c') [MCtrl]) -> pure ()
-    _ -> go vty height gen' cs'
+    _ -> go vty gen' steppedCs
 
 renderColumn :: Int -> Column -> Image
 renderColumn height col = vertCat (V.toList vec)

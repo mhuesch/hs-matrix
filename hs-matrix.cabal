@@ -20,7 +20,6 @@ executable hmx
                     , microlens-th
                     , primitive
                     , random
-                    , terminal-size
                     , vector
                     , vty
     hs-source-dirs:   app
