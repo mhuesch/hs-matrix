@@ -54,7 +54,18 @@ go vty gen cs = do
     Just (EvKey KEsc _) -> pure ()
     Just (EvKey (KChar 'q') _) -> pure ()
     Just (EvKey (KChar 'c') [MCtrl]) -> pure ()
+    Just (EvKey (KChar ' ') _) -> pause vty gen' steppedCs
     _ -> go vty gen' steppedCs
+
+pause :: Vty -> StdGen -> [Column] -> IO ()
+pause vty gen cs = do
+  e <- nextEvent vty
+  case e of
+    EvKey KEsc _ -> pure ()
+    EvKey (KChar 'q') _ -> pure ()
+    EvKey (KChar 'c') [MCtrl] -> pure ()
+    EvKey (KChar ' ') _ -> go vty gen cs
+    _ -> pause vty gen cs
 
 renderColumn :: Int -> Column -> Image
 renderColumn height col = vertCat (V.toList vec)
