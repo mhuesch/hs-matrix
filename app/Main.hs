@@ -38,6 +38,20 @@ main = do
   _ <- go vty gen []
   shutdown vty
 
+data KeyAction
+  = KaExit
+  | KaTogl
+  | KaStay
+
+categorizeKeyEvent :: Event -> KeyAction
+categorizeKeyEvent e =
+  case e of
+    EvKey KEsc _              -> KaExit
+    EvKey (KChar 'q') _       -> KaExit
+    EvKey (KChar 'c') [MCtrl] -> KaExit
+    EvKey (KChar ' ') _       -> KaTogl
+    _                         -> KaStay
+
 go :: Vty -> StdGen -> [Column] -> IO ()
 go vty gen cs = do
   threadDelay (5 * 10^(4::Int))
@@ -50,22 +64,18 @@ go vty gen cs = do
       pic = picForImage (horizCat imgCols)
   update vty pic
   mE <- nextEventNonblocking vty
-  case mE of
-    Just (EvKey KEsc _) -> pure ()
-    Just (EvKey (KChar 'q') _) -> pure ()
-    Just (EvKey (KChar 'c') [MCtrl]) -> pure ()
-    Just (EvKey (KChar ' ') _) -> pause vty gen' steppedCs
-    _ -> go vty gen' steppedCs
+  case categorizeKeyEvent <$> mE of
+    Just KaExit -> pure ()
+    Just KaTogl -> pause vty gen' steppedCs
+    _           -> go vty gen' steppedCs
 
 pause :: Vty -> StdGen -> [Column] -> IO ()
 pause vty gen cs = do
   e <- nextEvent vty
-  case e of
-    EvKey KEsc _ -> pure ()
-    EvKey (KChar 'q') _ -> pure ()
-    EvKey (KChar 'c') [MCtrl] -> pure ()
-    EvKey (KChar ' ') _ -> go vty gen cs
-    _ -> pause vty gen cs
+  case categorizeKeyEvent e of
+    KaExit -> pure ()
+    KaTogl -> go vty gen cs
+    KaStay -> pause vty gen cs
 
 renderColumn :: Int -> Column -> Image
 renderColumn height col = vertCat (V.toList vec)
