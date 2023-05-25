@@ -35,13 +35,18 @@ main = do
   cfg <- standardIOConfig
   vty <- mkVty cfg
   gen <- getStdGen
-  _ <- go vty gen []
+  _ <- go vty gen [] initFrameDelay
   shutdown vty
+
+data Direction
+  = Faster
+  | Slower
 
 data KeyAction
   = KaExit
   | KaTogl
   | KaStay
+  | KaSpeed Direction
 
 categorizeKeyEvent :: Event -> KeyAction
 categorizeKeyEvent e =
@@ -50,11 +55,20 @@ categorizeKeyEvent e =
     EvKey (KChar 'q') _       -> KaExit
     EvKey (KChar 'c') [MCtrl] -> KaExit
     EvKey (KChar ' ') _       -> KaTogl
+    EvKey KUp _               -> KaSpeed Faster
+    EvKey KDown _             -> KaSpeed Slower
     _                         -> KaStay
 
-go :: Vty -> StdGen -> [Column] -> IO ()
-go vty gen cs = do
-  threadDelay (5 * 10^(4::Int))
+initFrameDelay :: Int
+initFrameDelay = 7 * 10^(4::Int)
+
+adjustFrameDelay :: Direction -> Int -> Int
+adjustFrameDelay Faster frameDelay = (frameDelay *  9) `div` 10
+adjustFrameDelay Slower frameDelay = (frameDelay * 11) `div` 10
+
+go :: Vty -> StdGen -> [Column] -> Int -> IO ()
+go vty gen cs frameDelay = do
+  threadDelay frameDelay
   (width, height) <-
     displayBounds (outputIface vty)
   -- in the event of width rescaling, pad / truncate cols
@@ -66,16 +80,18 @@ go vty gen cs = do
   mE <- nextEventNonblocking vty
   case categorizeKeyEvent <$> mE of
     Just KaExit -> pure ()
-    Just KaTogl -> pause vty gen' steppedCs
-    _           -> go vty gen' steppedCs
+    Just KaTogl -> pause vty gen' steppedCs frameDelay
+    Just (KaSpeed dir) -> go vty gen' steppedCs (adjustFrameDelay dir frameDelay)
+    _           -> go vty gen' steppedCs frameDelay
 
-pause :: Vty -> StdGen -> [Column] -> IO ()
-pause vty gen cs = do
+pause :: Vty -> StdGen -> [Column] -> Int -> IO ()
+pause vty gen cs frameDelay = do
   e <- nextEvent vty
   case categorizeKeyEvent e of
     KaExit -> pure ()
-    KaTogl -> go vty gen cs
-    KaStay -> pause vty gen cs
+    KaTogl -> go vty gen cs frameDelay
+    KaStay -> pause vty gen cs frameDelay
+    KaSpeed dir -> pause vty gen cs (adjustFrameDelay dir frameDelay)
 
 renderColumn :: Int -> Column -> Image
 renderColumn height col = vertCat (V.toList vec)
